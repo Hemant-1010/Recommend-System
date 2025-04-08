@@ -2,24 +2,43 @@ import streamlit as st
 import pickle
 import requests
 import pandas as pd
+import base64
 
 st.set_page_config(page_title="Movie Recommender", layout="wide")
 st.title("🎬 Movie Recommendation System")
 
 
-st.markdown(
-    """
+
+
+# Load and encode local image
+def get_base64_of_bin_file(png_file):
+    with open(png_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+# Set background using CSS and base64
+def set_png_as_page_bg(png_file):
+    bin_str = get_base64_of_bin_file(png_file)
+    css_code = f"""
     <style>
-    .stApp {
-        background-image: url("a.png");
+    .stApp {{
+        background-image: url("data:image/png;base64,{bin_str}");
         background-size: cover;
         background-attachment: fixed;
         background-position: center;
-    }
+    }}
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    """
+    st.markdown(css_code, unsafe_allow_html=True)
+
+# Call it with your PNG file
+set_png_as_page_bg("a.png")
+
+
+
+
+
+
 
 
 
