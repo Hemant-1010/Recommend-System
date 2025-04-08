@@ -11,7 +11,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+        background-image: url("a.png");
         background-size: cover;
         background-attachment: fixed;
         background-position: center;
