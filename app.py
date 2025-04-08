@@ -6,21 +6,21 @@ import pandas as pd
 st.set_page_config(page_title="Movie Recommender", layout="wide")
 st.title("🎬 Movie Recommendation System")
 
+
 st.markdown(
     """
     <style>
     .stApp {
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0,0,0,0.6)),
-                    url("a.png");
+        background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
         background-size: cover;
         background-attachment: fixed;
         background-position: center;
-        color: white;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
