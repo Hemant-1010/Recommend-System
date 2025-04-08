@@ -2,7 +2,7 @@ import streamlit as st
 import pickle
 import requests
 def fetch_poster(movie_id):
-  url = "'https://api.themoviedb.org/3/movie/{}?api_key=62779883614a0011509171f0589efa22&language=en-US".format(movie_id)
+  url = "https://api.themoviedb.org/3/movie/{}?api_key=62779883614a0011509171f0589efa22&language=en-US".format(movie_id)
   data = requests.get(url)
   data = data.json()
   poster_path = data['poster_path']
@@ -17,7 +17,7 @@ import streamlit.components.v1 as components
 
 def recommend(movie):
   index = movies[movies['title']== movie].index[0]
-  distance = sorted(list(enumerate(similarity[2])),reverse=True,key=lambda vector:vector[1])
+  distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector: vector[1])
   recommend_movie = []
   recommend_poster = []
   for i in distance[1:6]:
@@ -41,10 +41,9 @@ if st.button("Show Recommend"):
   with col4:
     st.text(movies_name[3])
     st.image(movie_poster[3])
-  with col1:
+  with col5:
     st.text(movies_name[4])
     st.image(movie_poster[4])
-
 
 
   
