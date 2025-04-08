@@ -1,49 +1,78 @@
 import streamlit as st
 import pickle
 import requests
+import pandas as pd
+
+st.set_page_config(page_title="Movie Recommender", layout="wide")
+st.title("🎬 Movie Recommendation System")
+
+# -----------------------------
+# TMDB Poster Fetch Function
+# -----------------------------
 def fetch_poster(movie_id):
-  url = "https://api.themoviedb.org/3/movie/{}?api_key=62779883614a0011509171f0589efa22&language=en-US".format(movie_id)
-  data = requests.get(url)
-  data = data.json()
-  poster_path = data['poster_path']
-  full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
-  return full_path
-movies = pickle.load(open("movies_list.pkl",'rb'))
-similarity = pickle.load(open("similarity.pkl",'rb'))
-movies_list = movies['title'].values
-st.header("MOVIE RECOMMENDATION SYSTEM")
-selected_movies = st.selectbox("Select a movie: " , movies_list)
-import streamlit.components.v1 as components
+    try:
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=62779883614a0011509171f0589efa22&language=en-US"
+        response = requests.get(url)
+        data = response.json()
+        poster_path = data.get('poster_path')
+        if poster_path:
+            return f"https://image.tmdb.org/t/p/w500{poster_path}"
+        else:
+            return "https://via.placeholder.com/300x450?text=No+Poster"
+    except:
+        return "https://via.placeholder.com/300x450?text=Error"
 
+# -----------------------------
+# Cache Loading Data
+# -----------------------------
+@st.cache_data
+def load_data():
+    movies = pickle.load(open("movies_list.pkl", 'rb'))
+    similarity = pickle.load(open("similarity.pkl", 'rb'))
+    return movies, similarity
+
+movies, similarity = load_data()
+
+# -----------------------------
+# Recommendation Function
+# -----------------------------
 def recommend(movie):
-  index = movies[movies['title']== movie].index[0]
-  distance = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda vector: vector[1])
-  recommend_movie = []
-  recommend_poster = []
-  for i in distance[1:6]:
-    movies_id = movies.iloc[i[0]].id
-    recommend_movie.append(movies.iloc[i[0]].title)
-    recommend_poster.append(fetch_poster(movies_id))
-  return recommend_movie , recommend_poster 
+    try:
+        index = movies[movies['title'] == movie].index[0]
+    except IndexError:
+        st.error("Movie not found in dataset.")
+        return [], []
 
-if st.button("Show Recommend"):
-  movies_name,movie_poster = recommend(selected_movies)
-  col1 , col2 , col3 , col4 , col5 =st.columns(5)
-  with col1:
-    st.text(movies_name[0])
-    st.image(movie_poster[0])
-  with col2:
-    st.text(movies_name[1])
-    st.image(movie_poster[1])
-  with col3:
-    st.text(movies_name[2])
-    st.image(movie_poster[2])
-  with col4:
-    st.text(movies_name[3])
-    st.image(movie_poster[3])
-  with col5:
-    st.text(movies_name[4])
-    st.image(movie_poster[4])
+    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+    recommended_titles = []
+    recommended_posters = []
+
+    for i in distances[1:6]:  # Top 5 recommendations
+        movie_id = movies.iloc[i[0]].id
+        recommended_titles.append(movies.iloc[i[0]].title)
+        recommended_posters.append(fetch_poster(movie_id))
+
+    return recommended_titles, recommended_posters
+
+# -----------------------------
+# UI - Movie Selector
+# -----------------------------
+movie_titles = movies['title'].values
+selected_movie = st.selectbox("🔎 Search for a movie to get recommendations:", sorted(movie_titles))
+
+# -----------------------------
+# Recommend Button
+# -----------------------------
+if st.button("🎥 Show Recommendations"):
+    recommended_titles, recommended_posters = recommend(selected_movie)
+
+    if recommended_titles:
+        st.subheader("📌 Top 5 Similar Movies:")
+        cols = st.columns(5)
+        for i in range(5):
+            with cols[i]:
+                st.image(recommended_posters[i])
+                st.markdown(f"**{recommended_titles[i]}**")
 
 
   
