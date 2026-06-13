@@ -25,7 +25,7 @@ st.title("🎬 Movie Recommendation System")
 # -----------------------------
 def fetch_poster(movie_id):
     try:
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=62779883614a0011509171f0589efa22&language=en-US"
+        url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
         response = requests.get(url)
         data = response.json()
         poster_path = data.get('poster_path')
