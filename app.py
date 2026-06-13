@@ -25,6 +25,7 @@ st.title("🎬 Movie Recommendation System")
 # -----------------------------
 def fetch_poster(movie_id):
     try:
+        api_key = st.secrets["TMDB_API_KEY"]
         url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
         response = requests.get(url)
         data = response.json()
